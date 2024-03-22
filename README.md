@@ -7,7 +7,6 @@ Simulation Study & Figures:
 -  run_1.R
 -  summarize.R
 -  figures.R
--  TableStats.xlsx
 -  dat.R
 
 Example Code from Article & Table:
