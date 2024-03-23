@@ -59,7 +59,7 @@ pointSize <- 3
 
 a <- ggplot(datAll, aes(y=conv, x=g, col=approach)) + 
   stat_summary(geom = "line", linetype="dashed") +
-  stat_summary() +
+  stat_summary(fun="mean") +
   scale_y_continuous(name="Convergence Rate (%)", expand=c(0.05,0.05), limits=c(0,100)) +
   scale_x_continuous(breaks=unique(dat$g)) +
   theme_minimal() + 
@@ -70,7 +70,7 @@ a <- ggplot(datAll, aes(y=conv, x=g, col=approach)) +
 
 b <- ggplot(datAll, aes(y=conv, x=ratio, col=approach)) + 
   stat_summary(geom = "line", linetype="dashed") +
-  stat_summary() +
+  stat_summary(fun="mean") +
   facet_grid(cols=vars(approach)) +
   scale_y_continuous(name="Convergence Rate (%)", expand=c(0.05,0.05)) +
   scale_x_continuous(breaks=breaksCR, labels = labelsCR, name=expression(cols:rows)) +
@@ -85,7 +85,7 @@ b <- ggplot(datAll, aes(y=conv, x=ratio, col=approach)) +
 a + b + plot_layout(width = c(0.5, 1), guides='collect') & theme(legend.position = "bottom")
 
 # ggsave(
-#   filename = "conv.jpeg",
+#   filename = "Fig_3.jpeg",
 #   path = pathF,
 #   device = "jpeg",
 #   plot = last_plot(),
@@ -96,141 +96,14 @@ a + b + plot_layout(width = c(0.5, 1), guides='collect') & theme(legend.position
 # )
 
 
-
-
-### Fig. 4: Overall Estimation Accuracy by Sample Characteristics
-
-a <-
-  ggplot(datAllconv, aes(x=g, y=relRMSE_B, colour=approach)) + 
-  facet_grid(p_named ~ n_named, labeller=label_parsed) +
-  stat_summary(geom = "line", linetype="dashed", alpha=0.5) +
-  stat_summary(alpha=0.5) +
-  scale_colour_manual(name="Approach", labels=allNames_new, values=allCols) +
-  scale_y_continuous(name="Relative RMSE (%)", expand=c(0.01,0.01)) +
-  scale_x_continuous(breaks=unique(datAllconv$g), labels=unique(datAllconv$g), limits=range(datAllconv$g), expand=c(0.05,0.05)) +
-  coord_cartesian(ylim = c(0, 2500)) +
-  theme_minimal() + 
-  theme(text = element_text(family="serif"), panel.grid.minor = element_blank(), 
-        axis.text.x = element_text(margin=margin(10,0,0,0)), legend.pos = "none",
-        panel.border = element_rect(color = "grey",  fill = NA, size = 0.5)) +
-  labs(title="Between-Group Parameters")
-
-b <- ggplot(datAllconv, aes(x=g, y=relRMSE_W, colour=approach)) + 
-  facet_grid(p_named ~ n_named, labeller=label_parsed) +
-  stat_summary(geom = "line", linetype="dashed", alpha=0.5) +
-  stat_summary(alpha=0.5) +
-  scale_colour_manual(name="Approach", labels=allNames_new, values=allCols) +
-  scale_y_continuous(name="Relative RMSE (%)", expand=c(0.01,0.01)) +
-  scale_x_continuous(breaks=unique(datAllconv$g), labels=unique(datAllconv$g), limits=range(datAllconv$g), expand=c(0.05,0.05)) +
-  coord_cartesian(ylim = c(0, 250)) +
-  theme_minimal() + 
-  theme(text = element_text(family="serif"), panel.grid.minor = element_blank(), 
-        axis.text.x = element_text(margin=margin(10,0,0,0)), legend.pos = "none",
-        panel.border = element_rect(color = "grey",  fill = NA, size = 0.5)) +
-  labs(title="Within-Group Parameters")
-
-c <- ggplot(datAllconv, aes(x=g, y=relRMSE_ICC, colour=approach)) + 
-  facet_grid(p_named ~ n_named, labeller=label_parsed) +
-  stat_summary(geom = "line", linetype="dashed", alpha=0.5) +
-  stat_summary(alpha=0.5) +
-  scale_colour_manual(name="Approach", labels=allNames_new, values=allCols) +
-  scale_y_continuous(name="Relative RMSE (%)", expand=c(0.01,0.01), breaks=seq(0,750,250)) +
-  scale_x_continuous(breaks=unique(datAllconv$g), labels=unique(datAllconv$g), limits=range(datAllconv$g), expand=c(0.05,0.05)) +
-  coord_cartesian(ylim = c(0, 755)) +
-  theme_minimal() + 
-  theme(text = element_text(family="serif"), panel.grid.minor = element_blank(), 
-        axis.text.x = element_text(margin=margin(10,0,0,0)), legend.pos = "none",
-        panel.border = element_rect(color = "grey",  fill = NA, size = 0.5)) +
-  labs(title="Estimates of ICC")
-
-a + b + c + plot_layout(ncol=1, guides='collect') & theme(legend.position = "bottom")
-
-# ggsave(
-#   filename = "sampleCharacs.jpeg",
-#   path = pathF,
-#   device = "jpeg",
-#   plot = last_plot(),
-#   width = 600*3, 
-#   height = 1200*3,
-#   units = "px",
-#   dpi = 300
-# )
-
-# for information in article:
-datMeans <- filter(datAllconv, approach=="LF", n==5)
-aggregate(datMeans$relRMSE_ICC, list(datMeans$g), FUN=mean) 
-
-
-### Fig. 5: Overall Estimation Accuracy by Population Characteristics
-
-a <-
-  ggplot(datAllconv, aes(x=ICC, y=relRMSE_B, colour=approach)) + 
-  facet_grid(cor_B_named ~ cor_W_named, labeller=label_parsed) +
-  stat_summary(geom = "line", linetype="dashed", alpha=0.5) +
-  stat_summary(alpha=0.5) +
-  scale_colour_manual(name="Approach", labels=allNames_new, values=allCols) +
-  scale_y_continuous(name="Relative RMSE (%)", expand=c(0.01,0.01)) +#,
-  scale_x_continuous(breaks=unique(datAllconv$ICC), labels=unique(datAllconv$ICC), limits=range(datAllconv$ICC), expand=c(0.05,0.05)) +
-  theme_minimal() + 
-  coord_cartesian(ylim = c(0, 1200)) + # then scales="free_y" deprecated
-  theme(text = element_text(family="serif"), panel.grid.minor = element_blank(), 
-        axis.text.x = element_text(margin=margin(10,0,0,0)), legend.pos = "none",
-        panel.border = element_rect(color = "grey",  fill = NA, size = 0.5)) +
-  labs(title="Between-Group Parameters")
-
-b <- 
-  ggplot(datAllconv, aes(x=ICC, y=relRMSE_W, colour=approach)) + 
-  facet_grid(cor_B_named ~ cor_W_named, labeller=label_parsed) +
-  stat_summary(geom = "line", linetype="dashed", alpha=0.5) +
-  stat_summary(alpha=0.5) +
-  scale_colour_manual(name="Approach", labels=allNames_new, values=allCols) +
-  scale_y_continuous(name="Relative RMSE (%)", expand=c(0.01,0.01), breaks=seq(0,90, 30)) +
-  scale_x_continuous(breaks=unique(datAllconv$ICC), labels=unique(datAllconv$ICC), limits=range(datAllconv$ICC), expand=c(0.05,0.05)) +
-  theme_minimal() + 
-  coord_cartesian(ylim = c(0, 90)) + # then scales="free_y" deprecated
-  theme(text = element_text(family="serif"), panel.grid.minor = element_blank(), 
-        axis.text.x = element_text(margin=margin(10,0,0,0)), legend.pos = "bottom",
-        panel.border = element_rect(color = "grey",  fill = NA, size = 0.5)) +
-  labs(title="Within-Group Parameters")
-
-c <- 
-  ggplot(datAllconv, aes(x=ICC, y=relRMSE_ICC, colour=approach)) + 
-  facet_grid(cor_B_named ~ cor_W_named, labeller=label_parsed) +
-  stat_summary(geom = "line", linetype="dashed", alpha=0.5) +
-  stat_summary(alpha=0.5) +
-  scale_colour_manual(name="Approach", labels=allNames_new, values=allCols) +
-  scale_y_continuous(name="Relative RMSE (%)", expand=c(0.01,0.01)) +
-  scale_x_continuous(breaks=unique(datAllconv$ICC), labels=unique(datAllconv$ICC), limits=range(datAllconv$ICC), expand=c(0.05,0.05)) +
-  theme_minimal() + 
-  coord_cartesian(ylim = c(0, 300)) + # then scales="free_y" deprecated
-  theme(text = element_text(family="serif"), panel.grid.minor = element_blank(), 
-        axis.text.x = element_text(margin=margin(10,0,0,0)), legend.pos = "bottom",
-        panel.border = element_rect(color = "grey",  fill = NA, size = 0.5)) +
-  labs(title="Estimates of ICC")
-
-a + b + c + plot_layout(ncol=1, guides='collect') & theme(legend.position = "bottom")
-
-# ggsave(
-#   filename = "popCharacs.jpeg",
-#   path = pathF,
-#   device = "jpeg",
-#   plot = last_plot(),
-#   width = 600*3, 
-#   height = 900*3,
-#   units = "px",
-#   dpi = 300
-# )
-
-
-
-### Fig. 6: Relative Bias of Parameter Estimates
+### Fig. 4: Relative Bias of Parameter Estimates
 
 a <-
   ggplot(datAllconv, aes(x=g, y=relBias_var_B, colour=approach)) + 
   geom_rect(aes(xmin = Inf, xmax = -Inf, ymin = 0, ymax = Inf), alpha = 0.02, col="#fbc8c7", fill="#fbc8c7") +
   geom_rect(aes(xmin = Inf, xmax = -Inf, ymin = -Inf, ymax = 0), alpha = 0.02, col="#99e5e8", fill="#99e5e8") +
   stat_summary(geom = "line", linetype="dashed", alpha=0.5) +
-  stat_summary(alpha=0.5) +
+  stat_summary(fun="mean", alpha=0.5) +
   scale_colour_manual(name="Approach", labels=allNames_new, values=allCols) +
   scale_y_continuous(name="Relative Bias (%)", expand=c(0.05,0.05), breaks=seq(-300, 0, 50)
   ) +
@@ -247,7 +120,7 @@ b <-
   geom_rect(aes(xmin = Inf, xmax = -Inf, ymin = 0, ymax = Inf), alpha = 0.02, col="#fbc8c7", fill="#fbc8c7") +
   geom_rect(aes(xmin = Inf, xmax = -Inf, ymin = -Inf, ymax = 0), alpha = 0.02, col="#99e5e8", fill="#99e5e8") +
   stat_summary(geom = "line", linetype="dashed", alpha=0.5) +
-  stat_summary(alpha=0.5) +
+  stat_summary(fun="mean", alpha=0.5) +
   scale_colour_manual(name="Approach", labels=allNames_new, values=allCols) +
   scale_y_continuous(name="Relative Bias (%)", expand=c(0.05,0.05), breaks=seq(-300, 0, 50)
   ) +
@@ -263,7 +136,7 @@ c <- ggplot(datAllconv, aes(x=g, y=relBias_var_W, colour=approach)) +
   geom_rect(aes(xmin = Inf, xmax = -Inf, ymin = 0, ymax = Inf), alpha = 0.02, col="#fbc8c7", fill="#fbc8c7") +
   geom_rect(aes(xmin = Inf, xmax = -Inf, ymin = -Inf, ymax = 0), alpha = 0.02, col="#99e5e8", fill="#99e5e8") +
   stat_summary(geom = "line", linetype="dashed", alpha=0.5) +
-  stat_summary(alpha=0.5) +
+  stat_summary(fun="mean", alpha=0.5) +
   scale_colour_manual(name="Approach", labels=allNames_new, values=allCols) +
   scale_y_continuous(name="Relative Bias (%)", expand=c(0.05,0.05), breaks=seq(0, 75, 25)
   ) +
@@ -279,7 +152,7 @@ d <- ggplot(datAllconv, aes(x=g, y=relBias_cov_W, colour=approach)) +
   geom_rect(aes(xmin = Inf, xmax = -Inf, ymin = 0, ymax = Inf), alpha = 0.02, col="#fbc8c7", fill="#fbc8c7") +
   geom_rect(aes(xmin = Inf, xmax = -Inf, ymin = -Inf, ymax = 0), alpha = 0.02, col="#99e5e8", fill="#99e5e8") +
   stat_summary(geom = "line", linetype="dashed", alpha=0.5) +
-  stat_summary(alpha=0.5) +
+  stat_summary(fun="mean", alpha=0.5) +
   scale_colour_manual(name="Approach", labels=allNames_new, values=allCols) +
   scale_y_continuous(name="Relative Bias (%)", expand=c(0.05,0.05), breaks=seq(-75, 0, 25)
   ) +
@@ -296,7 +169,7 @@ e <-
   geom_rect(aes(xmin = Inf, xmax = -Inf, ymin = 0, ymax = Inf), alpha = 0.02, col="#fbc8c7", fill="#fbc8c7") +
   geom_rect(aes(xmin = Inf, xmax = -Inf, ymin = -Inf, ymax = 0), alpha = 0.02, col="#99e5e8", fill="#99e5e8") +
   stat_summary(geom = "line", linetype="dashed", alpha=0.5) +
-  stat_summary(alpha=0.5) +
+  stat_summary(fun="mean", alpha=0.5) +
   scale_colour_manual(name="Approach", labels=allNames_new, values=allCols) +
   scale_y_continuous(name="Relative Bias (%)", expand=c(0.05,0.05), breaks=seq(-300, 0, 50)
   ) +
@@ -313,15 +186,140 @@ legAll <- get_legend(e)
 a + b + c + d + e + legAll + plot_layout(ncol=2, guides='collect') & theme(legend.position = "none")
 
 # ggsave(
-#   filename = "relBias.jpeg",
+#   filename = "Fig_4.jpeg",
 #   path = pathF,
 #   device = "jpeg",
 #   plot = last_plot(),
-#   width = 500*3, 
+#   width = 500*3,
 #   height = 700*3,
 #   units = "px",
 #   dpi = 300
 # )
+
+
+### Fig. 5: Overall Estimation Accuracy by Sample Characteristics
+
+a <-
+  ggplot(datAllconv, aes(x=g, y=relRMSE_B, colour=approach)) + 
+  facet_grid(p_named ~ n_named, labeller=label_parsed) +
+  stat_summary(geom = "line", linetype="dashed", alpha=0.5) +
+  stat_summary(fun="mean", alpha=0.5) +
+  scale_colour_manual(name="Approach", labels=allNames_new, values=allCols) +
+  scale_y_continuous(name="Relative RMSE (%)", expand=c(0.01,0.01)) +
+  scale_x_continuous(breaks=unique(datAllconv$g), labels=unique(datAllconv$g), limits=range(datAllconv$g), expand=c(0.05,0.05)) +
+  coord_cartesian(ylim = c(0, 2500)) +
+  theme_minimal() + 
+  theme(text = element_text(family="serif"), panel.grid.minor = element_blank(), 
+        axis.text.x = element_text(margin=margin(10,0,0,0)), legend.pos = "none",
+        panel.border = element_rect(color = "grey",  fill = NA, size = 0.5)) +
+  labs(title="Between-Group Parameters")
+
+b <- ggplot(datAllconv, aes(x=g, y=relRMSE_W, colour=approach)) + 
+  facet_grid(p_named ~ n_named, labeller=label_parsed) +
+  stat_summary(geom = "line", linetype="dashed", alpha=0.5) +
+  stat_summary(fun="mean", alpha=0.5) +
+  scale_colour_manual(name="Approach", labels=allNames_new, values=allCols) +
+  scale_y_continuous(name="Relative RMSE (%)", expand=c(0.01,0.01)) +
+  scale_x_continuous(breaks=unique(datAllconv$g), labels=unique(datAllconv$g), limits=range(datAllconv$g), expand=c(0.05,0.05)) +
+  coord_cartesian(ylim = c(0, 250)) +
+  theme_minimal() + 
+  theme(text = element_text(family="serif"), panel.grid.minor = element_blank(), 
+        axis.text.x = element_text(margin=margin(10,0,0,0)), legend.pos = "none",
+        panel.border = element_rect(color = "grey",  fill = NA, size = 0.5)) +
+  labs(title="Within-Group Parameters")
+
+c <- ggplot(datAllconv, aes(x=g, y=relRMSE_ICC, colour=approach)) + 
+  facet_grid(p_named ~ n_named, labeller=label_parsed) +
+  stat_summary(geom = "line", linetype="dashed", alpha=0.5) +
+  stat_summary(fun="mean", alpha=0.5) +
+  scale_colour_manual(name="Approach", labels=allNames_new, values=allCols) +
+  scale_y_continuous(name="Relative RMSE (%)", expand=c(0.01,0.01), breaks=seq(0,750,250)) +
+  scale_x_continuous(breaks=unique(datAllconv$g), labels=unique(datAllconv$g), limits=range(datAllconv$g), expand=c(0.05,0.05)) +
+  coord_cartesian(ylim = c(0, 755)) +
+  theme_minimal() + 
+  theme(text = element_text(family="serif"), panel.grid.minor = element_blank(), 
+        axis.text.x = element_text(margin=margin(10,0,0,0)), legend.pos = "none",
+        panel.border = element_rect(color = "grey",  fill = NA, size = 0.5)) +
+  labs(title="Estimates of ICC")
+
+a + b + c + plot_layout(ncol=1, guides='collect') & theme(legend.position = "bottom")
+
+# ggsave(
+#   filename = "Fig_5.jpeg",
+#   path = pathF,
+#   device = "jpeg",
+#   plot = last_plot(),
+#   width = 600*3,
+#   height = 1200*3,
+#   units = "px",
+#   dpi = 300
+# )
+
+# for information in article:
+datMeans <- filter(datAllconv, approach=="LF", n==5)
+aggregate(datMeans$relRMSE_ICC, list(datMeans$g), FUN=mean) 
+
+
+### Fig. 6: Overall Estimation Accuracy by Population Characteristics
+
+a <-
+  ggplot(datAllconv, aes(x=ICC, y=relRMSE_B, colour=approach)) + 
+  facet_grid(cor_B_named ~ cor_W_named, labeller=label_parsed) +
+  stat_summary(geom = "line", linetype="dashed", alpha=0.5) +
+  stat_summary(fun="mean", alpha=0.5) +
+  scale_colour_manual(name="Approach", labels=allNames_new, values=allCols) +
+  scale_y_continuous(name="Relative RMSE (%)", expand=c(0.01,0.01)) +#,
+  scale_x_continuous(breaks=unique(datAllconv$ICC), labels=unique(datAllconv$ICC), limits=range(datAllconv$ICC), expand=c(0.05,0.05)) +
+  theme_minimal() + 
+  coord_cartesian(ylim = c(0, 1200)) + # then scales="free_y" deprecated
+  theme(text = element_text(family="serif"), panel.grid.minor = element_blank(), 
+        axis.text.x = element_text(margin=margin(10,0,0,0)), legend.pos = "none",
+        panel.border = element_rect(color = "grey",  fill = NA, size = 0.5)) +
+  labs(title="Between-Group Parameters")
+
+b <- 
+  ggplot(datAllconv, aes(x=ICC, y=relRMSE_W, colour=approach)) + 
+  facet_grid(cor_B_named ~ cor_W_named, labeller=label_parsed) +
+  stat_summary(geom = "line", linetype="dashed", alpha=0.5) +
+  stat_summary(fun="mean", alpha=0.5) +
+  scale_colour_manual(name="Approach", labels=allNames_new, values=allCols) +
+  scale_y_continuous(name="Relative RMSE (%)", expand=c(0.01,0.01), breaks=seq(0,90, 30)) +
+  scale_x_continuous(breaks=unique(datAllconv$ICC), labels=unique(datAllconv$ICC), limits=range(datAllconv$ICC), expand=c(0.05,0.05)) +
+  theme_minimal() + 
+  coord_cartesian(ylim = c(0, 90)) + # then scales="free_y" deprecated
+  theme(text = element_text(family="serif"), panel.grid.minor = element_blank(), 
+        axis.text.x = element_text(margin=margin(10,0,0,0)), legend.pos = "bottom",
+        panel.border = element_rect(color = "grey",  fill = NA, size = 0.5)) +
+  labs(title="Within-Group Parameters")
+
+c <- 
+  ggplot(datAllconv, aes(x=ICC, y=relRMSE_ICC, colour=approach)) + 
+  facet_grid(cor_B_named ~ cor_W_named, labeller=label_parsed) +
+  stat_summary(geom = "line", linetype="dashed", alpha=0.5) +
+  stat_summary(fun="mean", alpha=0.5) +
+  scale_colour_manual(name="Approach", labels=allNames_new, values=allCols) +
+  scale_y_continuous(name="Relative RMSE (%)", expand=c(0.01,0.01)) +
+  scale_x_continuous(breaks=unique(datAllconv$ICC), labels=unique(datAllconv$ICC), limits=range(datAllconv$ICC), expand=c(0.05,0.05)) +
+  theme_minimal() + 
+  coord_cartesian(ylim = c(0, 300)) + # then scales="free_y" deprecated
+  theme(text = element_text(family="serif"), panel.grid.minor = element_blank(), 
+        axis.text.x = element_text(margin=margin(10,0,0,0)), legend.pos = "bottom",
+        panel.border = element_rect(color = "grey",  fill = NA, size = 0.5)) +
+  labs(title="Estimates of ICC")
+
+a + b + c + plot_layout(ncol=1, guides='collect') & theme(legend.position = "bottom")
+
+# ggsave(
+#   filename = "Fig_6.jpeg",
+#   path = pathF,
+#   device = "jpeg",
+#   plot = last_plot(),
+#   width = 600*3,
+#   height = 900*3,
+#   units = "px",
+#   dpi = 300
+# )
+
 
 
 
@@ -330,7 +328,7 @@ a + b + c + d + e + legAll + plot_layout(ncol=2, guides='collect') & theme(legen
 ### Fig. B1: The Standard WF Approach and Its Different Input and Estimator Possibilities
 
 a <- ggplot(datWF, aes(y=conv, x=approach, col=Estimator, pch=Input)) + 
-  stat_summary() +
+  stat_summary(fun="mean") +
   scale_y_continuous(name="Convergence Rate (%)", expand=c(0,0)) +
   scale_x_discrete(labels=NULL, name=NULL) +
   theme_minimal() + 
@@ -341,7 +339,7 @@ a <- ggplot(datWF, aes(y=conv, x=approach, col=Estimator, pch=Input)) +
   labs(title="A")
 
 b <- ggplot(datWF, aes(x=approach, y=relRMSE_B, col=Estimator, pch=Input)) + 
-  stat_summary() +
+  stat_summary(fun="mean") +
   scale_colour_manual(name="Estimator for S", values=WFCols) +
   scale_y_continuous(name="Relative RMSE (%)", expand=c(0,0), breaks=seq(0,500,100)) +
   scale_x_discrete(labels=NULL, name=NULL) +
@@ -354,7 +352,7 @@ b <- ggplot(datWF, aes(x=approach, y=relRMSE_B, col=Estimator, pch=Input)) +
   labs(title="B")
 
 c <- ggplot(datWF, aes(x=approach, y=relRMSE_W, col=Estimator, pch=Input)) + 
-  stat_summary() +
+  stat_summary(fun="mean") +
   scale_colour_manual(name="Estimator for S", values=WFCols) +
   scale_y_continuous(name="Relative RMSE (%)", expand=c(0,0)) +
   scale_x_discrete(labels=NULL, name=NULL) +
@@ -369,13 +367,13 @@ c <- ggplot(datWF, aes(x=approach, y=relRMSE_W, col=Estimator, pch=Input)) +
 a + b + c + plot_layout(ncol=3, guides='collect') & theme(legend.position = "bottom")
 
 # ggsave(
-#   filename = "WF_sdata.jpeg",
+#   filename = "Fig_B1.jpeg",
 #   path = pathF,
 #   device = "jpeg",
 #   plot = last_plot(),
-#   width = 550*3, 
+#   width = 550*3,
 #   height = 200*3,
-#   unifts = "px",
+#   units = "px",
 #   dpi = 300
 # )
 
@@ -385,7 +383,7 @@ a + b + c + plot_layout(ncol=3, guides='collect') & theme(legend.position = "bot
 
 a <- ggplot(datAllconv, aes(x=approach, y=time, colour=approach), alpha=0.9) + 
   stat_summary(geom = "line", linetype="dashed") +
-  stat_summary() +
+  stat_summary(fun="mean") +
   scale_colour_manual(name="Approach", labels=allNames_new, values=allCols) +
   scale_y_continuous(name="Computation Time (s)", expand=c(0,0), 
                      breaks=seq(0,15,5)) + 
@@ -402,7 +400,7 @@ aggregate(datAllconv$time, list(datAllconv$approach), FUN="mean", na.rm = TRUE)
 
 b <- ggplot(datAllconv, aes(x=p, y=time, colour=approach)) + 
   stat_summary(geom = "line", linetype="dashed") +
-  stat_summary() +
+  stat_summary(fun="mean") +
   scale_colour_manual(name="Approach", labels=allNames_new, values=allCols) +
   scale_y_continuous(name="Computation Time (s)", expand=c(0,0), breaks=seq(0,30,5)) +
   scale_x_continuous(expand=c(0.05,0.05), breaks=unique(dat$p)) +
@@ -415,7 +413,7 @@ b <- ggplot(datAllconv, aes(x=p, y=time, colour=approach)) +
 
 c <- ggplot(datAllconv, aes(x=n, y=time, colour=approach)) + 
   stat_summary(geom = "line", linetype="dashed") +
-  stat_summary() +
+  stat_summary(fun="mean") +
   scale_colour_manual(name="Approach", labels=allNames_new, values=allCols) +
   scale_y_continuous(name="Computation Time (s)", expand=c(0,0), breaks=seq(0,30,5)) +
   scale_x_continuous(expand=c(0.05,0.05), breaks=unique(dat$n)) +
@@ -429,7 +427,7 @@ c <- ggplot(datAllconv, aes(x=n, y=time, colour=approach)) +
 a + b + c + plot_layout(ncol=3, guides='collect', widths = c(0.5, 1, 1)) & theme(legend.position = "bottom")
 
 # ggsave(
-#   filename = "time.jpeg",
+#   filename = "Fig_B2.jpeg",
 #   path = pathF,
 #   device = "jpeg",
 #   plot = last_plot(),
@@ -445,7 +443,7 @@ a + b + c + plot_layout(ncol=3, guides='collect', widths = c(0.5, 1, 1)) & theme
 a <- ggplot(datAllconv, aes(x=g, y=negVar_B, colour=approach)) + 
   facet_grid(rows=vars(ICC_named), cols=vars(n_named), labeller=label_parsed) +
   stat_summary(geom = "line", linetype="dashed") +
-  stat_summary() +
+  stat_summary(fun="mean") +
   scale_colour_manual(name="Approach", labels=allNames_new, values=allCols) +
   scale_y_continuous(name="Any Negative Variance in Model (%)", expand=c(0.01,0.01), limits=c(0,100)) +
   scale_x_continuous(breaks=unique(datAllconv$g), labels=unique(datAllconv$g), limits=range(datAllconv$g), expand=c(0.05,0.05)) +
@@ -458,7 +456,7 @@ a <- ggplot(datAllconv, aes(x=g, y=negVar_B, colour=approach)) +
 b <- ggplot(datAllconv, aes(x=g, y=ICC_Sigma_theta_neg, colour=approach)) + 
   facet_grid(rows=vars(ICC_named), cols=vars(n_named), labeller=label_parsed) +
   stat_summary(geom = "line", linetype="dashed") +
-  stat_summary() +
+  stat_summary(fun="mean") +
   scale_colour_manual(name="Approach", labels=allNames_new, values=allCols) +
   scale_y_continuous(name="Negative Estimates of ICC (%)", expand=c(0.01,0.01), limits=c(0,100)) +
   scale_x_continuous(breaks=unique(datAllconv$g), labels=unique(datAllconv$g), limits=range(datAllconv$g), expand=c(0.05,0.05)) +
@@ -471,11 +469,11 @@ b <- ggplot(datAllconv, aes(x=g, y=ICC_Sigma_theta_neg, colour=approach)) +
 a + b + plot_layout(ncol=2, guides='collect') & theme(legend.position = "bottom")
 
 # ggsave(
-#   filename = "negVa.jpeg",
+#   filename = "Fig_B3.jpeg",
 #   path = pathF,
 #   device = "jpeg",
 #   plot = last_plot(),
-#   width = 800*3, 
+#   width = 800*3,
 #   height = 400*3,
 #   units = "px",
 #   dpi = 300
