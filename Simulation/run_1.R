@@ -26,8 +26,8 @@ lapply(packages, require, character.only = TRUE)
 
 # get simulation design
 pI <- projectInfo()
-TableConds <- readRDS(paste0(pathO, "SimConds.rds"))
-ncond <- nrow(TableConds)
+SimConds <- readRDS(paste0(pathO, "SimConds.rds"))
+ncond <- nrow(SimConds)
 
 # use multiple cores through initializing multiple R sessions
 ncores <- 20
@@ -52,15 +52,15 @@ for (rep in scriptReps){
     ### 0) preparation ###
     
     # sample characteristics
-    n <- TableConds$n[cond]
-    p <- TableConds$p[cond]
-    g <- TableConds$g[cond]
+    n <- SimConds$n[cond]
+    p <- SimConds$p[cond]
+    g <- SimConds$g[cond]
     
     # population characteristics
-    popVar_B <- TableConds$ICC[cond]
-    popVar_W <- (1 - TableConds$ICC[cond])
-    popCov_B <- TableConds$cor_B[cond] * popVar_B
-    popCov_W <- TableConds$cor_W[cond] * popVar_W
+    popVar_B <- SimConds$ICC[cond]
+    popVar_W <- (1 - SimConds$ICC[cond])
+    popCov_B <- SimConds$cor_B[cond] * popVar_B
+    popCov_W <- SimConds$cor_W[cond] * popVar_W
     
     # for indexing parameters
     pc <- p * (p + 1) / 2 # number of unique covariance matrix elements (in LF)
@@ -71,7 +71,7 @@ for (rep in scriptReps){
     
     ### 1) generate data ####
 
-    data <- generateData(N=TableConds$N[cond], n=n, g=g, p=p, var_B=TableConds$ICC[cond], var_W=(1-TableConds$ICC[cond]), cor_B=TableConds$cor_B[cond], cor_W=TableConds$cor_W[cond])
+    data <- generateData(N=SimConds$N[cond], n=n, g=g, p=p, var_B=SimConds$ICC[cond], var_W=(1-SimConds$ICC[cond]), cor_B=SimConds$cor_B[cond], cor_W=SimConds$cor_W[cond])
 
     # prepare data
     data_WF <- pivot_wider(data, names_from = "persons", values_from = 3:(p+2))
