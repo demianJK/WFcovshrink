@@ -15,8 +15,8 @@ pathD <- "data/" # path for aggregated info from single repetitions
 source("scripts/functions/projectInfo.R") # infos about simulation study
 pI <- projectInfo()
 
-TableConds <- readRDS(paste0(pathO, "SimConds.rds"))
-ncond <- nrow(TableConds)
+SimConds <- readRDS(paste0(pathO, "SimConds.rds"))
+ncond <- nrow(SimConds)
 nrep <- pI$nrep
 approaches <- pI$approaches
 napproach <- length(approaches)
@@ -122,18 +122,18 @@ for (i in 1:napproach){
 }
 tmp <- as.data.frame(matrix(NA, ncol=length(colTable), nrow=ncond))
 colnames(tmp) <- colTable
-TableStats <- TableConds
+TableStats <- SimConds
 TableStats <- cbind(TableStats, tmp)
 
 for (cond in 1:ncond){
   
   # required for stat props
-  p <- TableConds$p[cond]
-  n <- TableConds$n[cond]
-  popVar_B <- TableConds$ICC[cond]
-  popVar_W <- (1 - TableConds$ICC[cond])
-  popCov_B <- TableConds$cor_B[cond] * popVar_B
-  popCov_W <- TableConds$cor_W[cond] * popVar_W
+  p <- SimConds$p[cond]
+  n <- SimConds$n[cond]
+  popVar_B <- SimConds$ICC[cond]
+  popVar_W <- (1 - SimConds$ICC[cond])
+  popCov_B <- SimConds$cor_B[cond] * popVar_B
+  popCov_W <- SimConds$cor_W[cond] * popVar_W
   
   # for indexing parameters
   pc <- p * (p + 1) / 2
