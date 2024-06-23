@@ -10,5 +10,5 @@ Simulation Study & Figures:
 -  dat.R
 
 Example Code from Article & Table:
--  OS_XRcode 
--  Tab_from_XRcode
+-  exRcode 
+-  Tab_from_exRcode
