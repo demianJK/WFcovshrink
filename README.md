@@ -12,7 +12,7 @@ Simulation Study & Figures:
 -  run_1.R
 -  summarize.R
 
-(2) If you just want to noodle around with the data
+(2) If you just want to noodle around with the results
 -  dat.R
 -  figures.R
 
