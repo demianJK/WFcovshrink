@@ -50,7 +50,7 @@ analyseData <- function(data_LF, data_WF, p, n, g, center){
   tmp3 <- c()
   for (j in 1:p){
     for (i in 1:n){
-      tmp2[i] <- paste0("x", j, "_", i)
+      tmp2[i] <- paste0("x", j,  ".", i)
       tmp3[i] <- paste0(tmp2[i], "~~Vx", j, "_w*", tmp2[i])
     }
     resid_w[j] <- paste(tmp3, collapse="; ")
@@ -65,7 +65,7 @@ analyseData <- function(data_LF, data_WF, p, n, g, center){
       for(m in 1:p){
         if(j != m & m > j){
           count <- count + 1
-          resid_cov[count] <- paste0("x", j, "_", i, "~~", "Cx", j, m, "_w*", "x", m, "_", i)
+          resid_cov[count] <- paste0("x", j,  ".", i, "~~", "Cx", j, m, "_w*", "x", m,  ".", i)
         }
       } 
     }
@@ -79,7 +79,7 @@ analyseData <- function(data_LF, data_WF, p, n, g, center){
   for (j in 1:p){
     for (i in 1:n){
       count <- count + 1
-      tmp[count] <- paste0("x", j, "_", i, "~0*1")
+      tmp[count] <- paste0("x", j,  ".", i, "~0*1")
     }
   }
   fac_int_w <- paste(tmp, collapse = "; ")
@@ -92,7 +92,7 @@ analyseData <- function(data_LF, data_WF, p, n, g, center){
   tmp <- c()
   for (j in 1:p){
     for (i in 1:n){
-      tmp[i] <- paste0("1*x", j, "_", i)
+      tmp[i] <- paste0("1*x", j,  ".", i)
     }
     fac_b[j] <- paste0("fx", j, "=~", paste(tmp, collapse="+"))
   }

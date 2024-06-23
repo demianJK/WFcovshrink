@@ -189,8 +189,8 @@ for (cond in 1:ncond){
       
       ## overall (variance and covariance)
 
-      TableStats[cond, paste("relRMSE_W", approaches[i], sep="_")] <- round( mean( c(((RMSE_var_W / popVar_W)* 100), ((RMSE_cov_W / popCov_W)* 100)) ), 2)
-      TableStats[cond, paste("relBias_W", approaches[i], sep="_")] <- round( mean( c(((Bias_var_W / popVar_W)* 100), ((Bias_cov_W / popCov_W)* 100)) ), 2)
+      TableStats[cond, paste("relRMSE_W", approaches[i], sep="_")] <- round( weighted.mean( c(((RMSE_var_W / popVar_W)* 100), ((RMSE_cov_W / popCov_W)* 100)), c(p, c) ), 2) 
+      TableStats[cond, paste("relBias_W", approaches[i], sep="_")] <- round( weighted.mean( c(((Bias_var_W / popVar_W)* 100), ((Bias_cov_W / popCov_W)* 100)), c(p, c) ), 2) 
       
       
       ### between-group
@@ -225,8 +225,8 @@ for (cond in 1:ncond){
 
       ## overall (variance and covariance)
       
-      TableStats[cond, paste("relRMSE_B", approaches[i], sep="_")] <- round( mean( c(((RMSE_var_B / popVar_B)* 100), ((RMSE_cov_B / popCov_B)* 100)) ), 2)
-      TableStats[cond, paste("relBias_B", approaches[i], sep="_")] <- round( mean( c(((Bias_var_B / popVar_B)* 100), ((Bias_cov_B / popCov_B)* 100)) ), 2)
+      TableStats[cond, paste("relRMSE_B", approaches[i], sep="_")] <-  round( weighted.mean( c(((RMSE_var_B / popVar_B)* 100), ((RMSE_cov_B / popCov_B)* 100)), c(p, c) ), 2)
+      TableStats[cond, paste("relBias_B", approaches[i], sep="_")] <- round( weighted.mean( c(((Bias_var_B / popVar_B)* 100), ((Bias_cov_B / popCov_B)* 100)), c(p, c) ), 2)
       
       # ICC_Sigma_theta (based on model parameters of intercept-only model)
       

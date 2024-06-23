@@ -74,7 +74,7 @@ for (rep in scriptReps){
     data <- generateData(N=SimConds$N[cond], n=n, g=g, p=p, var_B=SimConds$ICC[cond], var_W=(1-SimConds$ICC[cond]), cor_B=SimConds$cor_B[cond], cor_W=SimConds$cor_W[cond])
 
     # prepare data
-    data_WF <- pivot_wider(data, names_from = "persons", values_from = 3:(p+2))
+    data_WF <- pivot_wider(data, names_from = "persons", values_from = 3:(p+2), names_sep = ".")
     if (center == TRUE){  # grand-mean centering
       data_LF_centered <- as.data.frame(scale(data[,3:(p+2)], scale = F))
       data_LF <- cbind(data[,1:2], data_LF_centered)
