@@ -15,5 +15,5 @@ Simulation Study & Figures:
 -  figures.R
 
 Example Code from Article & Table:
--  exRcode 
--  Tab_from_exRcode
+-  exRcode.R
+-  Tab_from_exRcode.R
