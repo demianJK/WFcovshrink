@@ -1,6 +1,6 @@
 # WFcovshrink
 Two Stage Multilevel SEM with Shrinkage Estimation of the Sample Covariance Matrix
-https://www.researchgate.net/publication/383977518_Multilevel_Multigroup_Structural_Equation_Modeling_In_A_Single-Level_Framework
+https://www.tandfonline.com/doi/permissions/10.1080/10705511.2024.2380919?scroll=top
 
 R code and data for simulation study, table and figures.
 
